@@ -1,23 +1,24 @@
+function dydt = daeSystemLHS(X, y, PARAMS)
 
-
-function dydt = solve_CSTR_ODE(~, y, T0, Tj)
+    T0 = PARAMS(1);
+    Tj = PARAMS(2);
    
     %% Constants
-    EA = 69.1e3;     % J/mol
-    EB = 75.2e3;     % J/mol
-    kA0 = 5.0e6;     % 1/s
-    kB0 = 1.6e6;     % 1/s
-    rho = 800;       % kg/m^3
-    cp = 3.5e3;      % J/kg/K
-    UA = 1.4;        % W/K
-    deltaHA = -45.1e3; % J/mol
-    deltaHB = -55.1e3; % J/mol
-    F = 3e-3;        % m^3/s
-    V = 3e-3;        % m^3
-
+    EA      = 69000.0;    % J/mol
+    EB      = 72000.0;    % J/mol
+    kA0     = 5.0e6;      % 1/s
+    kB0     = 1.0e7;      % 1/s
+    rho     = 800.0;      % kg/m^3
+    cp      = 3.5;        % J/kg/K 
+    UA      = 1.4;        % W/K
+    deltaHA =  45000.0;   % J/mol   
+    deltaHB = -55000.0;   % J/mol
+    F       = 6.5e-4;     % m^3/s
+    V       = 1.0;        % m^3
+    
     %% Feed conditions
-    CA0 = 5;         % mol/m^3
-    CB0 = 15;        % mol/m^3
+    CA0 = 5.0;            % mol/m^3
+    CB0 = 15.0;           % mol/m^
 
     % Unpack state variables
     cA = y(1);
@@ -31,7 +32,7 @@ function dydt = solve_CSTR_ODE(~, y, T0, Tj)
 
     % Material balances
     dcAdt = (F/V)*(CA0 - cA) - kA * cA + kB * cB;
-    dcBdt = (F/V)*(CB0 - cB) - kB * cB + kA * cA;
+    dcBdt = (F/V)*(CB0 - cB) - kB * cB; 
     dcCdt = -(F/V) * cC + kA * cA;
 
     % Energy balance
