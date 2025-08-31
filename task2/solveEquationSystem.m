@@ -4,8 +4,7 @@ function[X,Y]=solveEquationSystem(PARAMS)
     CB_init = 18;    % mol/m^3
     CC_init = 0;     % mol/m^3
     T_init = 343;     % K
-    Y_INIT = [CA_init; CB_init; CC_init; T_init];
-
+    Y_INIT = [CA_init; CB_init; CC_init;T_init];
     
     %% Time span
     X_INTERVAL = [0 3600];  % seconds

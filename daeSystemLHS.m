@@ -1,45 +1,54 @@
-function dydt = daeSystemLHS(X, y, PARAMS)
-
-    T0 = PARAMS(1);
-    Tj = PARAMS(2);
+function DYDX = daeSystemLHS(X, Y, VARS)
    
-    %% Constants
-    EA      = 69000.0;    % J/mol
-    EB      = 72000.0;    % J/mol
-    kA0     = 5.0e6;      % 1/s
-    kB0     = 1.0e7;      % 1/s
-    rho     = 800.0;      % kg/m^3
-    cp      = 3.5;        % J/kg/K 
-    UA      = 1.4;        % W/K
-    deltaHA =  45000.0;   % J/mol   
-    deltaHB = -55000.0;   % J/mol
-    F       = 6.5e-4;     % m^3/s
-    V       = 1.0;        % m^3
-    
-    %% Feed conditions
-    CA0 = 5.0;            % mol/m^3
-    CB0 = 15.0;           % mol/m^
+    % declare parameters 
+    PARAMS(1) = 15.0;  	% e0_CB0 
+	PARAMS(2) = 72000.0;  	% e0_EB 
+	PARAMS(3) = 6.5E-4;  	% e0_F 
+	PARAMS(4) = 1.0;  	% e0_V 
+	PARAMS(5) = 1.0E7;  	% e0_kB0 
+	PARAMS(6) = 69000.0;  	% e0_EA 
+	PARAMS(7) = 5000000.0;  	% e0_kA0 
+	PARAMS(8) = 5.0;  	% e0_CA0 
+	PARAMS(9) = VARS(1);  	% e0_T0 
+	PARAMS(10) = VARS(2);  	% e0_Tj 
+	PARAMS(11) = 1.4;  	% e0_UA 
+	PARAMS(12) = 3.5;  	% e0_cp 
+	PARAMS(13) = 45000.0;  	% e0_deltaHA 
+	PARAMS(14) = -55000.0;  	% e0_deltaHB 
+	PARAMS(15) = 800.0;  	% e0_rho 
 
-    % Unpack state variables
-    cA = y(1);
-    cB = y(2);
-    cC = y(3);
-    T  = y(4);
+	% read out variables  
+	 
+    e0_cA = Y(1); 
+	e0_cB = Y(2); 
+	e0_cC = Y(3); 
+    e0_T = Y(4);
 
-    % Rate constants with Arrhenius law
-    kA = kA0 * exp(-EA / (8.314 * T));
-    kB = kB0 * exp(-EB / (8.314 * T));
+	% read out differential variable
+	e0_t = X;
 
-    % Material balances
-    dcAdt = (F/V)*(CA0 - cA) - kA * cA + kB * cB;
-    dcBdt = (F/V)*(CB0 - cB) - kB * cB; 
-    dcCdt = -(F/V) * cC + kA * cA;
+	% read out parameters  
+	e0_CB0 = PARAMS(1); 
+	e0_EB = PARAMS(2); 
+	e0_F = PARAMS(3); 
+	e0_V = PARAMS(4); 
+	e0_kB0 = PARAMS(5); 
+	e0_EA = PARAMS(6); 
+	e0_kA0 = PARAMS(7); 
+	e0_CA0 = PARAMS(8); 
+	e0_T0 = PARAMS(9); 
+	e0_Tj = PARAMS(10); 
+	e0_UA = PARAMS(11); 
+	e0_cp = PARAMS(12); 
+	e0_deltaHA = PARAMS(13); 
+	e0_deltaHB = PARAMS(14); 
+	e0_rho = PARAMS(15);
 
-    % Energy balance
-    dTdt = (F/V)*(T0 - T) ...
-           + (UA / (rho * cp * V)) * (Tj - T) ...
-           + (-deltaHA * kA * cA + (-deltaHB) * kB * cB) / (rho * cp);
+	% evaluate the function values  
+	DYDX(1) = ((e0_F)/(e0_V)) * (e0_T0 - e0_T) + ((e0_UA)/((e0_rho * e0_cp * e0_V))) * (e0_Tj - e0_T) + (( - e0_deltaHA * e0_kA0 * exp( - (e0_EA)/((8.314 * e0_T))) * e0_cA + ( - e0_deltaHB) * e0_kB0 * exp( - (e0_EB)/((8.314 * e0_T))) * e0_cB))/((e0_rho * e0_cp)); 
+	DYDX(2) = ((e0_F)/(e0_V)) * (e0_CB0 - e0_cB) - e0_kB0 * exp( - (e0_EB)/((8.314 * e0_T))) * e0_cB; 
+	DYDX(3) = ((e0_F)/(e0_V)) * (e0_CA0 - e0_cA) - e0_kA0 * exp( - (e0_EA)/((8.314 * e0_T))) * e0_cA + e0_kB0 * exp( - (e0_EB)/((8.314 * e0_T))) * e0_cB; 
+	DYDX(4) =  - ((e0_F)/(e0_V)) * e0_cC + e0_kA0 * exp( - (e0_EA)/((8.314 * e0_T))) * e0_cA; 
 
-    % Pack the derivatives
-    dydt = [dcAdt; dcBdt; dcCdt; dTdt];
+	DYDX=DYDX';
 end
